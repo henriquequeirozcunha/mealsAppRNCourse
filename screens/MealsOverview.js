@@ -1,7 +1,8 @@
-import { useRoute } from "@react-navigation/native"
+import { useNavigation, useRoute } from "@react-navigation/native"
 import { FlatList, StyleSheet, View } from "react-native"
-import { MEALS } from "../data/dummy-data"
+import { CATEGORIES, MEALS } from "../data/dummy-data"
 import MealItem from "../components/MealItem"
+import { useLayoutEffect } from "react"
 
 function renderMealItem(itemData) {
     return <MealItem {...itemData.item} />
@@ -9,7 +10,17 @@ function renderMealItem(itemData) {
 
 function MealsOverviewScreen() {
     const route = useRoute()
+    const navigation = useNavigation()
     const { categoryId } = route.params 
+
+    useLayoutEffect(() => {
+    const categoryTitle = CATEGORIES.find(item => item.id === categoryId)?.title
+
+    navigation.setOptions({
+        title: categoryTitle
+    })
+    }, [categoryId])
+    
 
     const displayedMeals = MEALS.filter(mealItem => mealItem.categoryIds.includes(categoryId))
 
