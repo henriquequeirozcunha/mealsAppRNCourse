@@ -7,17 +7,23 @@ import List from "../components/MealDetail/List";
 import { MaterialIcons } from '@expo/vector-icons'; 
 import { useContext, useLayoutEffect, useState } from "react";
 import IconButton from "../components/IconButton";
-import { FavoriteContext } from "../store/context/favorite-context";
+import { useDispatch, useSelector } from "react-redux";
+import { addFavorite, removeFavorite } from "../store/redux/favorite";
+// import { FavoriteContext } from "../store/context/favorite-context";
 
 function MealDetailScreen() {
-    const favoriteMealsCtx = useContext(FavoriteContext)
     const [isFavorite, setIsFavorite] = useState(false)
     const route = useRoute()
     const nagivation = useNavigation()
     const mealId = route.params?.mealId
+    // const favoriteMealsCtx = useContext(FavoriteContext)
+    // const mealIsFavorite = favoriteMealsCtx.ids.includes(mealId)
+
+    const dispatch = useDispatch()
+    const { ids: favoriteMealIds } = useSelector(state => state.favoriteMeals)
 
     const selectedMeal = MEALS.find(meal => meal.id === mealId)
-    const mealIsFavorite = favoriteMealsCtx.ids.includes(mealId)
+    const mealIsFavorite = favoriteMealIds.includes(mealId)
 
     useLayoutEffect(() => {
         nagivation.setOptions({
@@ -38,9 +44,11 @@ function MealDetailScreen() {
 
     function handleChangeFavoriteStatus() {
         if (mealIsFavorite) {
-            favoriteMealsCtx.removeFavorite(mealId)
+            // favoriteMealsCtx.removeFavorite(mealId)
+            dispatch(removeFavorite({ id: mealId }))
         } else {
-            favoriteMealsCtx.addFavorite(mealId)
+            // favoriteMealsCtx.addFavorite(mealId)
+            dispatch(addFavorite({ id: mealId }))
         }
     }
 
