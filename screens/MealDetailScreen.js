@@ -5,36 +5,43 @@ import MealDetails from "../components/MealDetails";
 import SubTitle from "../components/MealDetail/SubTitle";
 import List from "../components/MealDetail/List";
 import { MaterialIcons } from '@expo/vector-icons'; 
-import { useLayoutEffect, useState } from "react";
+import { useContext, useLayoutEffect, useState } from "react";
 import IconButton from "../components/IconButton";
+import { FavoriteContext } from "../store/context/favorite-context";
 
 function MealDetailScreen() {
+    const favoriteMealsCtx = useContext(FavoriteContext)
     const [isFavorite, setIsFavorite] = useState(false)
     const route = useRoute()
     const nagivation = useNavigation()
     const mealId = route.params?.mealId
 
     const selectedMeal = MEALS.find(meal => meal.id === mealId)
+    const mealIsFavorite = favoriteMealsCtx.ids.includes(mealId)
 
     useLayoutEffect(() => {
         nagivation.setOptions({
             headerRight: () => {
                 return (
                     <IconButton 
-                        icon='star' 
-                        onPress={handleHeaderButtonPress} 
+                        icon={mealIsFavorite ? 'star' : 'star-outline'}
+                        onPress={handleChangeFavoriteStatus} 
                     />
                 )
             }
         })
-    }, [nagivation, handleHeaderButtonPress])
+    }, [nagivation, handleChangeFavoriteStatus])
 
     function handleFavButton() {
         setIsFavorite(prev => !prev)
     }
 
-    function handleHeaderButtonPress() {
-
+    function handleChangeFavoriteStatus() {
+        if (mealIsFavorite) {
+            favoriteMealsCtx.removeFavorite(mealId)
+        } else {
+            favoriteMealsCtx.addFavorite(mealId)
+        }
     }
 
     return (
